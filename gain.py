@@ -55,12 +55,14 @@ def gain(data_x, gain_parameters):
     for it in tqdm(range(iterations)):
         batch_idx = sample_batch_index(no, batch_size)
         X_mb = norm_data_x[batch_idx, :]
-        M_mb = data_m[batch_idx, :]
-        Z_mb = uniform_sampler(0, 0.01, batch_size, dim)
-        H_mb_temp = binary_sampler(hint_rate, batch_size, dim)
+        M_mb = data_m[batch_idx, :].astype(np.float32)
+        Z_mb = uniform_sampler(0, 0.01, batch_size, dim).astype(np.float32)
+        H_mb_temp = binary_sampler(hint_rate, batch_size, dim).astype(np.float32)
         H_mb = M_mb * H_mb_temp
 
+
         X_mb_observed = M_mb * X_mb + (1 - M_mb) * Z_mb
+
 
         with tf.GradientTape() as d_tape:
             G_sample = G(tf.concat([X_mb_observed, M_mb], axis=1))
